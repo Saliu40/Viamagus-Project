@@ -3,28 +3,41 @@ pipeline {
     stages {
         stage('Pull Code from Git') {
             steps {
-                sh 'echo "checkout done"'            }
+                git 'https://github.com/kabirbaidhya/react-todo-app.git'
+                sh 'ls -la' // List files to verify the checkout
+                sh 'echo checkout done'
+            }
         }
         stage('Build') {
             steps {
-                sh 'npm install'
-                sh 'npm run build'
-                sh 'cp -r build/* /opt/deployment/react'
+                sh 'npm --version' // Check if npm is installed
+                sh 'npm install' // Make sure package.json exists in the correct location
             }
         }
         stage('Deploy') {
+            when {
+                expression { currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
+            }
             steps {
-                sh 'cd /opt/deployment/react'
-                sh 'pm2 serve /opt/deployment/react 3000 --name "react-todo-app -f"'
+                // Placeholder for deployment steps
+                sh 'echo Deploying application...'
+                // Add your actual deployment commands here
             }
         }
-
         stage('Upload to S3') {
+            when {
+                expression { currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
+            }
             steps {
-                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'SECRET']]) {
-                    sh 'aws s3 cp /opt/deployment/react s3://viamagus/ --recursive'
-                }
+                // Placeholder for S3 upload steps
+                sh 'echo Uploading to S3...'
+                // Add your actual S3 upload commands here
             }
         }
     }
 }
+
+
+
+
+#https://github.com/Praveenkarthick28/Viamagus.git
